@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#e9f5e9">
+  <title>Secure Entry | Offline</title>
+  <style>
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    body{min-height:100vh;margin:0;padding:24px;display:grid;place-items:center;background:#e9f5e9;color:#176B39;font-family:'Google Sans','Google Sans Text',Roboto,Arial,sans-serif;text-transform:uppercase;text-align:center}
+    .card{width:100%;max-width:330px;padding:24px 18px;border:1px solid rgba(23,107,57,.12);border-radius:14px;background:#fff;box-shadow:0 10px 22px rgba(23,107,57,.08),0 0 18px rgba(59,217,123,.18)}
+    img{width:72px;height:72px;display:block;margin:0 auto 14px}
+    h1{margin:0;font-size:18px;letter-spacing:1px}
+    p{margin:10px 0 18px;color:#718579;font-size:11px;font-weight:800;line-height:1.5;letter-spacing:.5px}
+    button{width:100%;padding:11px;border:0;border-radius:10px;background:linear-gradient(145deg,#41e671 0%,#176B39 100%);box-shadow:0 3px 12px #bbdfbb,0 1.5px 3px #3333;color:#fff;font:900 12px inherit;letter-spacing:1.2px;cursor:pointer}
+    button:active{transform:translateY(2px);box-shadow:0 2px 5px #bbb}
+  </style>
+</head>
+<body>
+  <main class="card">
+    <img src="./assets/se-shield.svg" alt="Secure Entry logo">
+    <h1>No Internet Connection</h1>
+    <p>The registration forms require an internet connection. Please reconnect and try again.</p>
+    <button type="button" onclick="location.reload()">Try Again</button>
+  </main>
+</body>
+</html>
