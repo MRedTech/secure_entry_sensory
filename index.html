@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#eaf8ec">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="Secure Entry menu for Sensory">
+  <title>Secure Entry | Sensory</title>
+
+  <style>
+    :root {
+      --bg: #eaf8ec;
+      --surface: rgba(255, 255, 255, 0.96);
+      --surface-strong: #ffffff;
+      --text: #163421;
+      --muted: #64756a;
+      --line: rgba(32, 121, 63, 0.15);
+      --primary: #20a953;
+      --primary-dark: #167536;
+      --primary-bright: #39dd79;
+      --primary-soft: #e4f8e9;
+      --accent: #31ca69;
+      --shadow: 0 22px 55px rgba(31, 123, 62, 0.14);
+      --shadow-card: 0 15px 34px rgba(31, 123, 62, 0.12);
+      --radius-xl: 28px;
+      --radius-lg: 23px;
+      --radius-md: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html {
+      min-height: 100%;
+      background: var(--bg);
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 8% 6%, rgba(57, 221, 121, 0.17), transparent 31%),
+        radial-gradient(circle at 96% 18%, rgba(32, 169, 83, 0.12), transparent 29%),
+        linear-gradient(180deg, #eefbee 0%, #e5f5e8 100%);
+      font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      overflow-x: hidden;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      z-index: 0;
+      border-radius: 999px;
+      filter: blur(2px);
+      pointer-events: none;
+    }
+
+    body::before {
+      width: 260px;
+      height: 260px;
+      top: -110px;
+      right: -85px;
+      background: rgba(57, 221, 121, 0.09);
+    }
+
+    body::after {
+      width: 220px;
+      height: 220px;
+      bottom: -110px;
+      left: -90px;
+      background: rgba(32, 169, 83, 0.09);
+    }
+
+    a {
+      color: inherit;
+    }
+
+    button,
+    a {
+      font: inherit;
+    }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      width: min(100%, 1080px);
+      min-height: 100vh;
+      margin: 0 auto;
+      padding: max(18px, env(safe-area-inset-top)) 20px max(20px, env(safe-area-inset-bottom));
+      display: flex;
+      flex-direction: column;
+    }
+
+    .shell {
+      width: 100%;
+      margin: auto 0;
+      padding: clamp(24px, 4vw, 46px);
+      border: 1px solid rgba(255, 255, 255, 0.94);
+      border-radius: var(--radius-xl);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    .brand {
+      text-align: center;
+    }
+
+    .date-time-bar {
+      width: min(100%, 430px);
+      margin: 0 auto 22px;
+      padding: 7px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      border-radius: 999px;
+      color: #ffffff;
+      background: linear-gradient(100deg, var(--primary-bright), var(--primary-dark));
+      box-shadow: 0 10px 24px rgba(31, 150, 73, 0.22);
+      font-size: clamp(0.76rem, 2vw, 0.9rem);
+      font-weight: 850;
+      letter-spacing: 0.11em;
+    }
+
+    .date-time-bar span {
+      white-space: nowrap;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: clamp(2rem, 6vw, 3.5rem);
+      line-height: 0.98;
+      letter-spacing: -0.045em;
+      font-weight: 850;
+      color: var(--primary);
+      background: linear-gradient(100deg, var(--primary-bright) 0%, var(--primary) 52%, var(--primary-dark) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .tagline {
+      margin: 12px 0 0;
+      color: #2d8c49;
+      font-size: clamp(0.78rem, 1.8vw, 0.96rem);
+      font-weight: 800;
+      letter-spacing: 0.18em;
+    }
+
+    .location-wrap {
+      margin-top: 18px;
+    }
+
+    .location-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 15px;
+      border: 1px solid rgba(22, 101, 52, 0.14);
+      border-radius: 999px;
+      color: var(--primary-dark);
+      background: var(--primary-soft);
+      font-size: 0.82rem;
+      font-weight: 850;
+      letter-spacing: 0.16em;
+    }
+
+    .location-badge svg {
+      width: 15px;
+      height: 15px;
+    }
+
+    .context-row {
+      margin: 26px auto 0;
+      padding-top: 22px;
+      border-top: 1px solid var(--line);
+    }
+
+    .context-copy h2 {
+      margin: 0;
+      color: var(--primary-dark);
+      font-size: clamp(1.15rem, 2.5vw, 1.45rem);
+      letter-spacing: -0.025em;
+    }
+
+    .context-copy p {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 0.94rem;
+      line-height: 1.55;
+    }
+
+    .menu-grid {
+      margin-top: 22px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .menu-card {
+      position: relative;
+      min-height: 292px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: var(--surface-strong);
+      box-shadow: var(--shadow-card);
+      text-decoration: none;
+      transform: translateY(0);
+      transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+    }
+
+    .menu-card::after {
+      content: "";
+      position: absolute;
+      width: 150px;
+      height: 150px;
+      top: -82px;
+      right: -66px;
+      border-radius: 999px;
+      background: var(--primary-soft);
+      transition: transform 180ms ease;
+    }
+
+    .menu-card:hover,
+    .menu-card:focus-visible {
+      transform: translateY(-4px);
+      border-color: rgba(22, 101, 52, 0.22);
+      box-shadow: 0 22px 46px rgba(20, 55, 39, 0.15);
+      outline: none;
+    }
+
+    .menu-card:hover::after,
+    .menu-card:focus-visible::after {
+      transform: scale(1.08);
+    }
+
+    .menu-card:active {
+      transform: translateY(-1px) scale(0.995);
+    }
+
+    .card-top {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .card-icon {
+      width: 52px;
+      height: 52px;
+      display: grid;
+      place-items: center;
+      border-radius: 16px;
+      color: var(--primary);
+      background: var(--primary-soft);
+    }
+
+    .card-icon svg {
+      width: 26px;
+      height: 26px;
+    }
+
+    .card-number {
+      color: rgba(16, 35, 28, 0.18);
+      font-size: 0.8rem;
+      font-weight: 850;
+      letter-spacing: 0.12em;
+    }
+
+    .card-content {
+      position: relative;
+      z-index: 1;
+      margin-top: 25px;
+    }
+
+    .card-content h3 {
+      margin: 0;
+      color: var(--primary-dark);
+      font-size: clamp(1.28rem, 2.6vw, 1.65rem);
+      line-height: 1.18;
+      letter-spacing: -0.035em;
+    }
+
+    .card-content p {
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 0.94rem;
+      line-height: 1.58;
+    }
+
+    .card-meta {
+      margin-top: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .chip {
+      padding: 6px 9px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: #39784c;
+      background: #f1fbf4;
+      font-size: 0.72rem;
+      font-weight: 750;
+    }
+
+    .card-action {
+      position: relative;
+      z-index: 1;
+      margin-top: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 54px;
+      padding: 0 16px;
+      border-radius: 15px;
+      color: #ffffff;
+      background: linear-gradient(100deg, var(--primary-bright), var(--primary-dark));
+      box-shadow: 0 10px 22px rgba(31, 150, 73, 0.22);
+      font-size: 0.84rem;
+      font-weight: 850;
+      letter-spacing: 0.045em;
+    }
+
+    .arrow {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.18);
+      transition: transform 180ms ease, background 180ms ease;
+    }
+
+    .menu-card:hover .arrow,
+    .menu-card:focus-visible .arrow {
+      transform: translateX(3px);
+      background: rgba(255, 255, 255, 0.28);
+    }
+
+    .arrow svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .footer {
+      padding: 18px 0 2px;
+      color: #79857f;
+      text-align: center;
+      font-size: 0.74rem;
+      font-weight: 650;
+      letter-spacing: 0.04em;
+    }
+
+    .footer strong {
+      color: #53635b;
+      font-weight: 800;
+    }
+
+    .loading-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: rgba(10, 28, 20, 0.44);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 150ms ease, visibility 150ms ease;
+    }
+
+    .loading-overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .loading-box {
+      width: min(100%, 310px);
+      padding: 24px;
+      border-radius: 22px;
+      background: #ffffff;
+      box-shadow: 0 26px 70px rgba(0, 0, 0, 0.22);
+      text-align: center;
+    }
+
+    .spinner {
+      width: 38px;
+      height: 38px;
+      margin: 0 auto 15px;
+      border: 4px solid #dcebe1;
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 700ms linear infinite;
+    }
+
+    .loading-box strong {
+      display: block;
+      font-size: 1rem;
+    }
+
+    .loading-box span {
+      display: block;
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 720px) {
+      .page {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+
+      .shell {
+        padding: 24px 17px;
+        border-radius: 25px;
+      }
+
+      .menu-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .menu-card {
+        min-height: 272px;
+      }
+    }
+
+    @media (max-width: 390px) {
+      .shell {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+
+      .menu-card {
+        padding: 20px;
+      }
+
+      .context-copy p {
+        font-size: 0.88rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="shell" aria-labelledby="page-title">
+      <header class="brand">
+        <div class="date-time-bar" aria-live="polite">
+          <span id="clockDate">--/--/----</span>
+          <span id="clockTime">--:--:--</span>
+        </div>
+
+        <h1 id="page-title">SECURE ENTRY</h1>
+        <p class="tagline">REGISTER. ACCESS. SECURE.</p>
+
+        <div class="location-wrap">
+          <span class="location-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/>
+              <circle cx="12" cy="10" r="2.5"/>
+            </svg>
+            SENSORY
+          </span>
+        </div>
+      </header>
+
+      <div class="context-row">
+        <div class="context-copy">
+          <h2>Select Registration Type</h2>
+          <p>Choose the appropriate form before starting registration.</p>
+        </div>
+      </div>
+
+      <div class="menu-grid">
+        <a
+          class="menu-card form-link"
+          href="https://mredtech.github.io/visitor_sensory/"
+          data-form-name="Visitor Registration"
+          aria-label="Open Visitor Registration form"
+        >
+          <div class="card-top">
+            <div class="card-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M19 8v6M22 11h-6"/>
+              </svg>
+            </div>
+            <span class="card-number">01</span>
+          </div>
+
+          <div class="card-content">
+            <h3>Visitor Registration</h3>
+            <p>Register visitors who are visiting a resident or attending an appointment.</p>
+            <div class="card-meta" aria-label="Visitor categories">
+              <span class="chip">Visitor</span>
+              <span class="chip">Resident Visit</span>
+            </div>
+          </div>
+
+          <div class="card-action">
+            <span>OPEN VISITOR FORM</span>
+            <span class="arrow" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14M13 6l6 6-6 6"/>
+              </svg>
+            </span>
+          </div>
+        </a>
+
+        <a
+          class="menu-card form-link"
+          href="https://mredtech.github.io/sensory/"
+          data-form-name="Delivery & Quick Access"
+          aria-label="Open Delivery and Quick Access form"
+        >
+          <div class="card-top">
+            <div class="card-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 7h11v10H3z"/>
+                <path d="M14 10h4l3 3v4h-7z"/>
+                <circle cx="7" cy="18" r="2"/>
+                <circle cx="18" cy="18" r="2"/>
+                <path d="M5 4h7"/>
+              </svg>
+            </div>
+            <span class="card-number">02</span>
+          </div>
+
+          <div class="card-content">
+            <h3>Delivery &amp; Quick Access</h3>
+            <p>For delivery, e-hailing, drop off, pick up and other short access registrations.</p>
+            <div class="card-meta" aria-label="Quick access categories">
+              <span class="chip">Delivery</span>
+              <span class="chip">E-Hailing</span>
+              <span class="chip">Drop Off</span>
+              <span class="chip">Pick Up</span>
+            </div>
+          </div>
+
+          <div class="card-action">
+            <span>OPEN ACCESS FORM</span>
+            <span class="arrow" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14M13 6l6 6-6 6"/>
+              </svg>
+            </span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <footer class="footer">
+      Powered by <strong>mred tech</strong>
+    </footer>
+  </main>
+
+  <div class="loading-overlay" id="loadingOverlay" role="status" aria-live="polite" aria-hidden="true">
+    <div class="loading-box">
+      <div class="spinner" aria-hidden="true"></div>
+      <strong id="loadingTitle">Opening form...</strong>
+      <span>Please wait while the registration form loads.</span>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const timeElement = document.getElementById('clockTime');
+      const dateElement = document.getElementById('clockDate');
+      const overlay = document.getElementById('loadingOverlay');
+      const loadingTitle = document.getElementById('loadingTitle');
+      const formLinks = document.querySelectorAll('.form-link');
+
+      const timeFormatter = new Intl.DateTimeFormat('en-MY', {
+        timeZone: 'Asia/Kuala_Lumpur',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      });
+
+      const dateFormatter = new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'Asia/Kuala_Lumpur',
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+
+      function updateClock() {
+        const now = new Date();
+        timeElement.textContent = timeFormatter.format(now);
+        dateElement.textContent = dateFormatter.format(now);
+      }
+
+      function showLoading(formName) {
+        loadingTitle.textContent = `Opening ${formName}...`;
+        overlay.classList.add('show');
+        overlay.setAttribute('aria-hidden', 'false');
+      }
+
+      function hideLoading() {
+        overlay.classList.remove('show');
+        overlay.setAttribute('aria-hidden', 'true');
+      }
+
+      formLinks.forEach((link) => {
+        link.addEventListener('click', (event) => {
+          const url = link.href;
+          const formName = link.dataset.formName || 'form';
+
+          if (!url) {
+            event.preventDefault();
+            return;
+          }
+
+          event.preventDefault();
+          showLoading(formName);
+
+          window.setTimeout(() => {
+            window.location.href = url;
+          }, 320);
+        });
+      });
+
+      window.addEventListener('pageshow', hideLoading);
+
+      updateClock();
+      window.setInterval(updateClock, 1000);
+    })();
+  </script>
+</body>
+</html>
