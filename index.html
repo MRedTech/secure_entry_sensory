@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<!-- SECURE ENTRY SENSORY PWA V7 | VISITOR-MATCHED HEADER | 2026-08-05 -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#e9f5e9">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="Secure Entry menu for Sensory">
+  <meta name="application-name" content="Secure Entry">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Secure Entry">
+  <link rel="manifest" href="./manifest.webmanifest?v=3">
+  <link rel="icon" type="image/svg+xml" href="./assets/se-shield.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png">
+  <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+  <link rel="preload" href="./assets/se-shield.svg" as="image" type="image/svg+xml">
+  <title>Secure Entry</title>
+
+  <style>
+    :root {
+      --se-green-1: #41e671;
+      --se-green-2: #176B39;
+      --se-green-3: #3bd97b;
+      --se-text: #176B39;
+      --se-muted: #718579;
+      --se-bg: #e9f5e9;
+      --se-card: #ffffff;
+      --se-glow: rgba(59, 217, 123, .18);
+      --se-glow-strong: rgba(59, 217, 123, .28);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html {
+      min-height: 100%;
+      background: var(--se-bg);
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      padding: 0 20px 42px;
+      background: var(--se-bg);
+      color: var(--se-text);
+      font-family: 'Google Sans', 'Google Sans Text', Roboto, Arial, sans-serif;
+      text-transform: uppercase;
+    }
+
+    button,
+    a {
+      font-family: inherit;
+    }
+
+    .fixed-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 9999;
+      width: 100%;
+      padding: 9px 0 8px;
+      background: rgba(233, 245, 233, .86);
+      border-bottom: 1px solid rgba(23, 107, 57, .12);
+      box-shadow: 0 10px 26px rgba(0, 0, 0, .08);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .fixed-header::after {
+      display: none;
+    }
+
+    .mode-divider {
+      width: 100%;
+      height: 2px;
+      margin-top: 8px;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(65, 230, 113, .65) 20%,
+        rgba(23, 107, 57, .75) 60%,
+        transparent 100%
+      );
+      opacity: .55;
+    }
+
+    .mode-switch-wrap {
+      max-width: 420px;
+      margin: 0 auto;
+      padding: 7px 20px 0;
+    }
+
+    .mode-switch {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      width: 100%;
+    }
+
+    .mode-pill {
+      min-height: 34px;
+      padding: 7px 14px;
+      border: 1px solid rgba(23, 107, 57, .18);
+      border-radius: 999px;
+      background: linear-gradient(145deg, #f7fcf8 0%, #e6f6e9 100%);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, .95),
+        0 2px 6px rgba(23, 107, 57, .08);
+      color: #397c55;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      line-height: 1;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition:
+        color .14s ease,
+        background .14s ease,
+        border-color .14s ease,
+        box-shadow .14s ease,
+        transform .1s ease;
+    }
+
+    .mode-pill:hover,
+    .mode-pill:focus-visible {
+      border-color: rgba(23, 107, 57, .30);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, .95),
+        0 5px 12px rgba(23, 107, 57, .13),
+        0 0 14px var(--se-glow);
+      outline: none;
+    }
+
+    .mode-pill:active {
+      transform: translateY(2px) scale(.99);
+    }
+
+    .mode-pill.is-active {
+      border-color: transparent;
+      background: linear-gradient(145deg, var(--se-green-1) 0%, var(--se-green-2) 100%);
+      box-shadow:
+        0 4px 10px rgba(23, 107, 57, .20),
+        0 0 16px var(--se-glow-strong);
+      color: #ffffff;
+    }
+
+    .header-inner {
+      max-width: 420px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .brand-row {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      width: 100%;
+    }
+
+    .brand-logo {
+      flex: 0 0 68px;
+      display: block;
+      width: 68px;
+      height: 68px;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 6px rgba(23, 107, 57, .18));
+    }
+
+    .brand-copy {
+      flex: 1;
+      min-width: 0;
+      text-align: left;
+    }
+
+    .brand-heading-block {
+      display: inline-block;
+      max-width: 100%;
+      vertical-align: top;
+    }
+
+    .clock-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      margin: 0 0 5px;
+      padding: 3px 9px;
+      box-sizing: border-box;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #41e671 0%, #176B39 100%);
+      box-shadow: 0 2px 7px rgba(23, 107, 57, .18);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .5px;
+      line-height: 1.15;
+      white-space: nowrap;
+    }
+
+    .header-gradient {
+      min-width: 0;
+      margin: 0;
+      background: linear-gradient(145deg, #54e087 0%, #2b7a2b 100%);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      font-size: 1.58rem;
+      font-weight: 800;
+      letter-spacing: .65px;
+      line-height: 1.05;
+      white-space: nowrap;
+      text-align: left;
+    }
+
+    .tagline {
+      min-width: 0;
+      margin: 4px 0 0;
+      color: #489167;
+      font-size: 10px;
+      letter-spacing: .5px;
+      line-height: 1.15;
+      white-space: nowrap;
+      text-align: left;
+    }
+
+    .brand-meta-row {
+      display: flex;
+      align-items: center;
+      min-width: 0;
+      margin-top: 5px;
+    }
+
+    .site-name {
+      flex: 0 0 auto;
+      margin: 0;
+      color: #176B39;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 1.15px;
+      line-height: 1.15;
+      white-space: nowrap;
+      text-align: left;
+    }
+
+    .page-content {
+      width: 100%;
+      max-width: 330px;
+      margin: 15px auto 0;
+    }
+
+    .selection-card,
+    .menu-card {
+      width: 100%;
+      background: var(--se-card);
+      border: 1px solid rgba(23, 107, 57, .10);
+      border-radius: 13px;
+      box-shadow: 0 10px 22px rgba(23, 107, 57, .08), 0 0 18px var(--se-glow);
+    }
+
+    .selection-card {
+      margin: 0 auto 14px;
+      padding: 12px 15px 13px;
+      text-align: center;
+    }
+
+    .selection-title {
+      margin: 0;
+      color: #176B39;
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: 1px;
+    }
+
+    .selection-text {
+      margin: 6px 0 0;
+      color: var(--se-muted);
+      font-size: 9.5px;
+      font-weight: 800;
+      letter-spacing: .55px;
+      line-height: 1.45;
+    }
+
+    .menu-card {
+      position: relative;
+      display: block;
+      margin: 0 auto 20px;
+      padding: 14px 15px 15px;
+      color: inherit;
+      text-decoration: none;
+      cursor: pointer;
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-user-select: none;
+      transform: translateY(0) scale(1);
+      box-shadow:
+        0 7px 0 rgba(23, 107, 57, .14),
+        0 14px 24px rgba(23, 107, 57, .10),
+        0 0 18px var(--se-glow);
+      transition:
+        transform .14s cubic-bezier(.2, .8, .2, 1),
+        box-shadow .14s ease,
+        border-color .14s ease,
+        background .14s ease;
+    }
+
+    .menu-card:hover,
+    .menu-card:focus-visible {
+      transform: translateY(-2px) scale(1.006);
+      border-color: rgba(23, 107, 57, .22);
+      box-shadow:
+        0 9px 0 rgba(23, 107, 57, .16),
+        0 18px 28px rgba(23, 107, 57, .13),
+        0 0 22px var(--se-glow-strong);
+      outline: none;
+    }
+
+    .menu-card:active,
+    .menu-card.is-pressed {
+      transform: translateY(5px) scale(.985);
+      box-shadow:
+        0 2px 0 rgba(23, 107, 57, .16),
+        0 6px 12px rgba(23, 107, 57, .10),
+        0 0 10px rgba(59, 217, 123, .14);
+    }
+
+    .menu-card.is-coming-soon {
+      cursor: default;
+      opacity: .72;
+      transform: none;
+      box-shadow:
+        0 5px 0 rgba(23, 107, 57, .09),
+        0 10px 20px rgba(23, 107, 57, .07),
+        0 0 12px rgba(59, 217, 123, .10);
+    }
+
+    .menu-card.is-coming-soon:hover,
+    .menu-card.is-coming-soon:focus-visible,
+    .menu-card.is-coming-soon:active {
+      transform: none;
+      border-color: rgba(23, 107, 57, .10);
+      box-shadow:
+        0 5px 0 rgba(23, 107, 57, .09),
+        0 10px 20px rgba(23, 107, 57, .07),
+        0 0 12px rgba(59, 217, 123, .10);
+    }
+
+    .menu-coming-soon {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      min-height: 23px;
+      padding: 4px 8px;
+      border: 1px solid rgba(23, 107, 57, .14);
+      border-radius: 999px;
+      background: linear-gradient(145deg, #f7fcf8 0%, #e6f6e9 100%);
+      color: #397c55;
+      font-size: 7.5px;
+      font-weight: 900;
+      letter-spacing: .45px;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .menu-coming-soon[hidden] {
+      display: none;
+    }
+
+    .menu-card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .menu-icon {
+      flex: 0 0 40px;
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      color: #176B39;
+      background: linear-gradient(145deg, #f4fbf5 0%, #dff4e4 100%);
+      border: 1px solid rgba(23, 107, 57, .12);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .95), 0 2px 5px rgba(23, 107, 57, .07);
+      transition: transform .14s ease;
+    }
+
+    .menu-card:active .menu-icon,
+    .menu-card.is-pressed .menu-icon {
+      transform: scale(.94);
+    }
+
+    .menu-icon svg {
+      width: 23px;
+      height: 23px;
+    }
+
+    .menu-title {
+      flex: 1;
+      min-width: 0;
+      margin: 0;
+      color: #176B39;
+      font-size: 14px;
+      font-weight: 900;
+      letter-spacing: .65px;
+      line-height: 1.25;
+    }
+
+    .menu-card-arrow {
+      flex: 0 0 28px;
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: linear-gradient(145deg, var(--se-green-1) 0%, var(--se-green-2) 100%);
+      box-shadow: 0 3px 8px rgba(23, 107, 57, .18);
+      color: #ffffff;
+      font-size: 17px;
+      font-weight: 900;
+      line-height: 1;
+      transition: transform .14s ease, box-shadow .14s ease;
+    }
+
+    .menu-card:hover .menu-card-arrow,
+    .menu-card:focus-visible .menu-card-arrow {
+      transform: translateX(2px);
+      box-shadow: 0 5px 10px rgba(23, 107, 57, .22);
+    }
+
+    .menu-card:active .menu-card-arrow,
+    .menu-card.is-pressed .menu-card-arrow {
+      transform: translateX(3px) scale(.93);
+      box-shadow: 0 2px 5px rgba(23, 107, 57, .16);
+    }
+
+    .menu-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      align-items: center;
+    }
+
+    .menu-pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 27px;
+      padding: 5px 10px;
+      border: 1px solid rgba(23, 107, 57, .14);
+      border-radius: 999px;
+      background: linear-gradient(145deg, #f7fcf8 0%, #e6f6e9 100%);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .95), 0 2px 5px rgba(23, 107, 57, .06);
+      color: #397c55;
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: .45px;
+      line-height: 1.15;
+      white-space: nowrap;
+    }
+
+    .menu-card-access .menu-pill {
+      font-size: 8.2px;
+      padding-left: 8px;
+      padding-right: 8px;
+    }
+
+    .footer {
+      position: fixed;
+      bottom: 8px;
+      left: 0;
+      width: 100%;
+      color: #9aa9a0;
+      text-align: center;
+      font-size: 10px;
+      font-weight: bold;
+      pointer-events: none;
+    }
+
+    .loading-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+      background: rgba(0, 0, 0, .45);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity .15s ease, visibility .15s ease;
+    }
+
+    .loading-overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .loading-box {
+      width: 380px;
+      max-width: calc(100vw - 20px);
+      padding: 18px 16px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #e9f7ef 0%, #ffffff 55%, #d8f5e4 100%);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, .18);
+      color: #176B39;
+      text-align: center;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 28px;
+      height: 28px;
+      margin-bottom: 10px;
+      border: 4px solid rgba(23, 107, 57, .15);
+      border-top-color: #176B39;
+      border-right-color: #41e671;
+      border-radius: 50%;
+      animation: google-spin .8s linear infinite;
+    }
+
+    .loading-title {
+      display: block;
+      font-size: 14px;
+      font-weight: 900;
+      letter-spacing: .8px;
+    }
+
+    .loading-text {
+      display: block;
+      margin-top: 5px;
+      color: var(--se-muted);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .45px;
+      line-height: 1.4;
+    }
+
+    @keyframes google-spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 360px) {
+      body {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+
+      .header-inner {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+
+      .brand-row {
+        gap: 9px;
+      }
+
+      .brand-logo {
+        flex-basis: 60px;
+        width: 60px;
+        height: 60px;
+      }
+
+      .header-gradient {
+        font-size: 1.38rem;
+        letter-spacing: .5px;
+      }
+
+      .clock-bar,
+      .tagline {
+        font-size: 10px;
+        letter-spacing: .4px;
+      }
+
+      .site-name {
+        font-size: 10px;
+        letter-spacing: .9px;
+      }
+
+      .mode-switch-wrap {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+
+      .mode-pill {
+        min-height: 32px;
+        padding-left: 10px;
+        padding-right: 10px;
+        font-size: 11px;
+        letter-spacing: .8px;
+      }
+
+      .menu-title {
+        font-size: 13px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: .001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .001ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="fixed-header">
+    <div class="header-inner">
+      <div class="brand-row">
+        <img class="brand-logo" src="./assets/se-shield.svg" alt="Secure Entry SE logo" width="68" height="68" decoding="async">
+        <div class="brand-copy">
+          <div class="brand-heading-block">
+            <div class="clock-bar" aria-label="Current date and time">
+              <span id="liveDateOnly">--/--/----</span>
+              <span id="liveTimeOnly">--:--:--</span>
+            </div>
+            <h1 class="header-gradient">SECURE ENTRY</h1>
+          </div>
+          <div class="tagline">REGISTER.ACCESS.SECURE</div>
+          <div class="brand-meta-row">
+            <div class="site-name">SENSORY</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mode-divider" aria-hidden="true"></div>
+
+    <div class="mode-switch-wrap">
+      <div class="mode-switch" role="tablist" aria-label="Secure Entry mode">
+        <button
+          class="mode-pill is-active"
+          id="userModeButton"
+          type="button"
+          role="tab"
+          aria-selected="true"
+          data-mode="USER"
+        >USER</button>
+        <button
+          class="mode-pill"
+          id="dataModeButton"
+          type="button"
+          role="tab"
+          aria-selected="false"
+          data-mode="DATA"
+        >DATA</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-content">
+
+    <section class="selection-card" aria-labelledby="selectionTitle">
+      <h2 class="selection-title" id="selectionTitle">SELECT REGISTRATION TYPE</h2>
+      <p class="selection-text">CHOOSE THE APPROPRIATE FORM BEFORE STARTING REGISTRATION.</p>
+    </section>
+
+    <a
+      class="menu-card menu-card-access form-link"
+      href="https://mredtech.github.io/sensory/"
+      data-menu-key="delivery"
+      data-form-name="Delivery | E-Hailing"
+      aria-labelledby="deliveryTitle"
+    >
+      <div class="menu-card-header">
+        <div class="menu-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 7h11v10H3z"/>
+            <path d="M14 10h4l3 3v4h-7z"/>
+            <circle cx="7" cy="18" r="2"/>
+            <circle cx="18" cy="18" r="2"/>
+            <path d="M5 4h7"/>
+          </svg>
+        </div>
+        <h2 class="menu-title" id="deliveryTitle">DELIVERY | E-HAILING</h2>
+        <span class="menu-coming-soon" hidden>COMING SOON</span>
+        <span class="menu-card-arrow" aria-hidden="true">→</span>
+      </div>
+      <div class="menu-pills" aria-label="Delivery and E-Hailing categories">
+        <span class="menu-pill">FOOD DELIVERY</span>
+        <span class="menu-pill">PARCEL DELIVERY</span>
+        <span class="menu-pill">E-HAILING</span>
+        <span class="menu-pill">DROP OFF</span>
+        <span class="menu-pill">PICK UP</span>
+      </div>
+    </a>
+
+    <a
+      class="menu-card form-link"
+      href="https://mredtech.github.io/visitor_sensory/"
+      data-menu-key="visitor"
+      data-form-name="Visitor Registration"
+      aria-labelledby="visitorTitle"
+    >
+      <div class="menu-card-header">
+        <div class="menu-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M19 8v6M22 11h-6"/>
+          </svg>
+        </div>
+        <h2 class="menu-title" id="visitorTitle">VISITOR REGISTRATION</h2>
+        <span class="menu-coming-soon" hidden>COMING SOON</span>
+        <span class="menu-card-arrow" aria-hidden="true">→</span>
+      </div>
+      <div class="menu-pills" aria-label="Visitor category">
+        <span class="menu-pill">VISITOR</span>
+      </div>
+    </a>
+
+    <a
+      class="menu-card form-link"
+      href="https://mredtech.github.io/owner_tenant_sensory/"
+      data-menu-key="ownerTenant"
+      data-form-name="Owner | Tenant"
+      aria-labelledby="ownerTenantTitle"
+    >
+      <div class="menu-card-header">
+        <div class="menu-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 11.5 12 4l9 7.5"/>
+            <path d="M5.5 10.5V20h13v-9.5"/>
+            <circle cx="10" cy="13" r="2"/>
+            <path d="M6.8 19v-1.2A2.8 2.8 0 0 1 9.6 15h.8a2.8 2.8 0 0 1 2.8 2.8V19"/>
+            <path d="M16 13h2M17 12v2"/>
+          </svg>
+        </div>
+        <h2 class="menu-title" id="ownerTenantTitle">OWNER | TENANT</h2>
+        <span class="menu-coming-soon" hidden>COMING SOON</span>
+        <span class="menu-card-arrow" aria-hidden="true">→</span>
+      </div>
+      <div class="menu-pills" aria-label="Owner and tenant categories">
+        <span class="menu-pill">OWNER</span>
+        <span class="menu-pill">TENANT</span>
+      </div>
+    </a>
+  </main>
+
+  <footer class="footer">POWERED BY MRED TECH</footer>
+
+  <div class="loading-overlay" id="loadingOverlay" role="status" aria-live="polite" aria-hidden="true">
+    <div class="loading-box">
+      <div class="spinner" aria-hidden="true"></div>
+      <strong class="loading-title" id="loadingTitle">OPENING FORM...</strong>
+      <span class="loading-text">PLEASE WAIT WHILE THE SECURE ENTRY PAGE LOADS.</span>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const MODE_STORAGE_KEY = 'SE_LANDING_MODE';
+
+      const MODE_CONFIG = {
+        USER: {
+          selectionTitle: 'SELECT REGISTRATION TYPE',
+          selectionText: 'CHOOSE THE APPROPRIATE FORM BEFORE STARTING REGISTRATION.',
+          items: {
+            delivery: {
+              url: 'https://mredtech.github.io/sensory/',
+              openName: 'Delivery | E-Hailing',
+              available: true
+            },
+            visitor: {
+              url: 'https://mredtech.github.io/visitor_sensory/',
+              openName: 'Visitor Registration',
+              available: true
+            },
+            ownerTenant: {
+              url: 'https://mredtech.github.io/owner_tenant_sensory/',
+              openName: 'Owner | Tenant',
+              available: true
+            }
+          }
+        },
+        DATA: {
+          selectionTitle: 'SELECT DASHBOARD',
+          selectionText: 'CHOOSE THE DASHBOARD TO VIEW SECURE ENTRY STATISTICS.',
+          items: {
+            delivery: {
+              url: 'https://mredtech.github.io/dashboard_sensory/',
+              openName: 'Delivery Dashboard',
+              available: true
+            },
+            visitor: {
+              url: '',
+              openName: 'Visitor Dashboard',
+              available: false
+            },
+            ownerTenant: {
+              url: '',
+              openName: 'Owner | Tenant Dashboard',
+              available: false
+            }
+          }
+        }
+      };
+
+      const header = document.querySelector('.fixed-header');
+      const overlay = document.getElementById('loadingOverlay');
+      const loadingTitle = document.getElementById('loadingTitle');
+      const selectionTitle = document.getElementById('selectionTitle');
+      const selectionText = document.querySelector('.selection-text');
+      const modeButtons = document.querySelectorAll('.mode-pill[data-mode]');
+      const formLinks = document.querySelectorAll('.form-link[data-menu-key]');
+
+      let currentMode = 'USER';
+
+      function pad2(value) {
+        return String(value).padStart(2, '0');
+      }
+
+      function updateDateTime() {
+        const now = new Date();
+        const dateElement = document.getElementById('liveDateOnly');
+        const timeElement = document.getElementById('liveTimeOnly');
+
+        if (dateElement) {
+          dateElement.textContent = `${pad2(now.getDate())}/${pad2(now.getMonth() + 1)}/${now.getFullYear()}`;
+        }
+
+        if (timeElement) {
+          timeElement.textContent = `${pad2(now.getHours())}:${pad2(now.getMinutes())}:${pad2(now.getSeconds())}`;
+        }
+      }
+
+      function syncHeaderOffset() {
+        if (!header) return;
+        document.body.style.paddingTop = `${header.offsetHeight}px`;
+      }
+
+      function saveMode(mode) {
+        try {
+          sessionStorage.setItem(MODE_STORAGE_KEY, mode);
+        } catch (_) {}
+      }
+
+      function getSavedMode() {
+        try {
+          const saved = sessionStorage.getItem(MODE_STORAGE_KEY);
+          return saved === 'DATA' ? 'DATA' : 'USER';
+        } catch (_) {
+          return 'USER';
+        }
+      }
+
+      function showLoading(pageName) {
+        loadingTitle.textContent = `OPENING ${String(pageName || 'PAGE').toUpperCase()}...`;
+        overlay.classList.add('show');
+        overlay.setAttribute('aria-hidden', 'false');
+      }
+
+      function resetMenuCards() {
+        formLinks.forEach((link) => {
+          link.classList.remove('is-pressed');
+          link.removeAttribute('aria-busy');
+        });
+      }
+
+      function hideLoading() {
+        overlay.classList.remove('show');
+        overlay.setAttribute('aria-hidden', 'true');
+        resetMenuCards();
+      }
+
+      function applyMode(mode, options = {}) {
+        const nextMode = mode === 'DATA' ? 'DATA' : 'USER';
+        const config = MODE_CONFIG[nextMode];
+
+        currentMode = nextMode;
+
+        modeButtons.forEach((button) => {
+          const isActive = button.dataset.mode === nextMode;
+          button.classList.toggle('is-active', isActive);
+          button.setAttribute('aria-selected', String(isActive));
+        });
+
+        if (selectionTitle) {
+          selectionTitle.textContent = config.selectionTitle;
+        }
+
+        if (selectionText) {
+          selectionText.textContent = config.selectionText;
+        }
+
+        formLinks.forEach((link) => {
+          const key = link.dataset.menuKey;
+          const item = config.items[key];
+          if (!item) return;
+
+          const available = item.available === true;
+          const statusBadge = link.querySelector('.menu-coming-soon');
+          const arrow = link.querySelector('.menu-card-arrow');
+
+          link.dataset.available = String(available);
+          link.dataset.formName = item.openName;
+          link.classList.toggle('is-coming-soon', !available);
+          link.setAttribute('aria-disabled', String(!available));
+
+          if (available) {
+            link.href = item.url;
+            link.removeAttribute('tabindex');
+          } else {
+            link.removeAttribute('href');
+            link.setAttribute('tabindex', '-1');
+          }
+
+          if (statusBadge) {
+            statusBadge.hidden = available;
+          }
+
+          if (arrow) {
+            arrow.textContent = available ? '→' : '–';
+          }
+        });
+
+        if (options.save !== false) {
+          saveMode(nextMode);
+        }
+
+        window.requestAnimationFrame(syncHeaderOffset);
+      }
+
+      modeButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+          const mode = button.dataset.mode;
+          if (!mode || mode === currentMode) return;
+          hideLoading();
+          applyMode(mode);
+        });
+      });
+
+      formLinks.forEach((link) => {
+        link.addEventListener('click', (event) => {
+          const available = link.dataset.available === 'true';
+          const url = link.getAttribute('href');
+          const pageName = link.dataset.formName || 'page';
+
+          event.preventDefault();
+
+          if (!available || !url) {
+            return;
+          }
+
+          if (link.classList.contains('is-pressed')) return;
+
+          link.classList.add('is-pressed');
+          link.setAttribute('aria-busy', 'true');
+
+          window.setTimeout(() => {
+            showLoading(pageName);
+          }, 120);
+
+          window.setTimeout(() => {
+            window.location.href = url;
+          }, 360);
+        });
+      });
+
+      window.addEventListener('load', syncHeaderOffset);
+      window.addEventListener('resize', syncHeaderOffset);
+      window.addEventListener('pageshow', () => {
+        hideLoading();
+        applyMode(getSavedMode(), { save: false });
+      });
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' })
+            .then((registration) => registration.update())
+            .catch((error) => {
+              console.warn('Service worker registration failed:', error);
+            });
+        });
+      }
+
+      updateDateTime();
+      window.setInterval(updateDateTime, 1000);
+      applyMode(getSavedMode(), { save: false });
+      syncHeaderOffset();
+    })();
+  </script>
+</body>
+</html>
